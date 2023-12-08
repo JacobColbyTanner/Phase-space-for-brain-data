@@ -1,7 +1,6 @@
 
 from scipy.io import loadmat, savemat
 import numpy as np
-import model as net
 from torch.utils.data import TensorDataset, DataLoader
 import torch
 import torch.optim as optim
