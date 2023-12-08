@@ -11,11 +11,11 @@ from scipy.io import loadmat
 import CTRNN
 
 # Hyperparameters
-
+supercomputer = True
 batch_size = 25
-sequence_length = 5
-num_iter = 10
-learning_rate = 0.000001
+sequence_length = 200
+num_iter = 100
+learning_rate = 0.0001
 epochs = 1000
 input_size = 10
 hidden_size = 200
@@ -27,7 +27,10 @@ net = CTRNN.CTRNN(input_size, hidden_size, dt=dt)
 
 
 # open data
-data = loadmat('/Users/jacobtanner/Brain networks lab Dropbox/Jacob Tanner/jacobcolbytanner/schaefer200_HCP7t_movie_rest_struct.mat')
+if supercomputer == True:
+    data = loadmat('/N/project/networkRNNs/schaefer200_HCP7t_movie_rest_struct.mat')
+else:
+    data = loadmat('/Users/jacobtanner/Brain networks lab Dropbox/Jacob Tanner/jacobcolbytanner/schaefer200_HCP7t_movie_rest_struct.mat')
 brain_data = data['HCP_7t_movie_rest']
 
 
@@ -62,28 +65,29 @@ def get_batch(brain_data, sequence_length, batch_size,hidden_size):
 criterion = nn.MSELoss()  
 
 # Optimizer
-optimizer = optim.Adam(model.parameters(), lr=learning_rate)
+optimizer = optim.Adam(net.parameters(), lr=learning_rate)
 
 # Training Loop
 for epoch in range(epochs):
-    model.train()  # Set the model to training mode
+    
     total_loss = 0
     start_time = time.time()
     r = []
     for j in range(num_iter):
         #create batches
-        real_hidden = get_batch(brain_data, sequence_length, batch_size,ntokens,out_size)
+        real_hidden = get_batch(brain_data, sequence_length, batch_size, hidden_size)
         
         #network inputs and starting state
-        hidden_starting_states = torch.from_numpy(real_hidden[0,:,:].squeeze())
+        hidden_starting_states = real_hidden[0,:,:].squeeze()
         inputs = torch.randn(sequence_length,batch_size,input_size)
         # Forward pass
         outputs, hidden = net(inputs,hidden_starting_states)
      
         loss = criterion(outputs, real_hidden)
 
-        O = outputs.detach().numpy().squeeze()
-        T = targets.detach().numpy().squeeze()
+        O = outputs.detach().numpy().flatten()
+        T = real_hidden.detach().numpy().flatten()
+  
 
         corr = np.corrcoef(O,T)
         r.append(corr[0,1])
