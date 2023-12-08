@@ -94,11 +94,7 @@ for epoch in range(epochs):
         optimizer.step()       # Update weights
 
         total_loss += loss.item()
-    #plt.plot(outputs[-1,0,:].detach().numpy())
-    #plt.plot(targets[-1,0,:].detach().numpy())
-    #plt.show()
 
-    
 
     end_time = time.time()-start_time
     # Print average loss for the epoch
