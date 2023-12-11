@@ -1,0 +1,3 @@
+slurmstepd: error: *** STEP 2239738.0 ON nid0640 CANCELLED AT 2023-12-11T03:39:46 DUE TO TIME LIMIT ***
+srun: Job step aborted: Waiting up to 32 seconds for job step to finish.
+slurmstepd: error: *** JOB 2239738 ON nid0640 CANCELLED AT 2023-12-11T03:39:46 DUE TO TIME LIMIT ***

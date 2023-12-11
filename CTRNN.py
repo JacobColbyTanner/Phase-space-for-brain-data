@@ -55,7 +55,7 @@ class CTRNN(nn.Module):
             h_new: tensor of shape (batch, hidden_size),
                 network activity at the next time step
         """
-        h_new = torch.relu(self.input2h(input) + self.h2h(hidden))
+        h_new = torch.tanh(self.input2h(input) + self.h2h(hidden))
         h_new = hidden * (1 - self.alpha) + h_new * self.alpha
         return h_new
 
@@ -83,6 +83,37 @@ class CTRNN(nn.Module):
 
 
 
+class RNNNet(nn.Module):
+    """Recurrent network model.
+
+    Parameters:
+        input_size: int, input size
+        hidden_size: int, hidden size
+        output_size: int, output size
+    
+    Inputs:
+        x: tensor of shape (Seq Len, Batch, Input size)
+
+    Outputs:
+        out: tensor of shape (Seq Len, Batch, Output size)
+        rnn_output: tensor of shape (Seq Len, Batch, Hidden size)
+    """
+    def __init__(self, input_size, hidden_size, output_size, **kwargs):
+        super().__init__()
+
+        # Continuous time RNN
+        self.rnn = CTRNN(input_size, hidden_size, **kwargs)
+        
+        # Add an output layer
+        self.fc = nn.Linear(hidden_size, output_size)
+
+    def forward(self, x):
+        rnn_output, hidden = self.rnn(x)
+        out = torch.tanh(self.fc(rnn_output))
+        return out, rnn_output
+    
+    
+    
     
     
 
