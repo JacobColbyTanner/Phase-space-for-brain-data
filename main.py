@@ -16,7 +16,7 @@ supercomputer = True
 curriculum = True
 batch_size = 75
 if curriculum == True:
-    sequence_length = 2
+    sequence_length = 25
 else:
     sequence_length = 50
 num_iter = 25
@@ -82,18 +82,19 @@ class BatchCorrelationLoss(nn.Module):
         batch_size = preds.size(0)
         correlations = []
         for i in range(batch_size):
-            pred = preds[:,i,:].squeeze()
-            target = targets[:,i,:].squeeze()
+            for j in range(preds.shape[2]): #by brain region
+                pred = preds[:,i,j].squeeze()
+                target = targets[:,i,j].squeeze()
 
-            pred_mean = torch.mean(pred)
-            target_mean = torch.mean(target)
+                pred_mean = torch.mean(pred)
+                target_mean = torch.mean(target)
 
-            numerator = torch.mean((pred - pred_mean) * (target - target_mean))
-            pred_std = torch.sqrt(torch.mean((pred - pred_mean) ** 2))
-            target_std = torch.sqrt(torch.mean((target - target_mean) ** 2))
+                numerator = torch.mean((pred - pred_mean) * (target - target_mean))
+                pred_std = torch.sqrt(torch.mean((pred - pred_mean) ** 2))
+                target_std = torch.sqrt(torch.mean((target - target_mean) ** 2))
 
-            correlation = numerator / (pred_std * target_std)
-            correlations.append(correlation)
+                correlation = numerator / (pred_std * target_std)
+                correlations.append(correlation)
 
         # Average the correlations across the batch
         average_correlation = torch.mean(torch.stack(correlations))
@@ -120,7 +121,7 @@ for epoch in range(epochs):
 
     if (epoch+1) % 40 == 0:
         if curriculum == True:
-            sequence_length += 2
+            sequence_length += 1
             print("sequence_length is now: ", sequence_length)
     for j in range(num_iter):
         #create batches
@@ -167,6 +168,6 @@ for epoch in range(epochs):
     print("Epoch: ", epoch," Loss: ", total_loss/num_iter,"r: ",np.nanmean(r), "time: ", end_time, flush=True)
 
 if supercomputer == True:
-    torch.save(net.state_dict(), '/N/project/networkRNNs/CTRNN_fMRI_no_gaus.pth')
+    torch.save(net.state_dict(), '/N/project/networkRNNs/CTRNN_fMRI.pth')
 else:
-    torch.save(net.state_dict(), 'models/CTRNN_fMRI_no_gaus.pth')
+    torch.save(net.state_dict(), 'models/CTRNN_fMRI.pth')

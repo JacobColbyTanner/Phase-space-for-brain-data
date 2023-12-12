@@ -34,7 +34,7 @@ net = CTRNN.RNNNet(input_size=num_nodes, hidden_size=hidden_size,
              output_size=num_nodes, dt=dt)
 
 
-net.load_state_dict(torch.load('/N/project/networkRNNs/CTRNN_fMRI_no_gaus.pth'))
+net.load_state_dict(torch.load('/N/project/networkRNNs/CTRNN_fMRI.pth'))
 
 
 # open data
